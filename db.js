@@ -98,8 +98,8 @@ const withdrawMoney = async ({ accId, amount }) => {
     }
 
     // Prevent negative balance
-    const MINIMUM_BALANCE = 0
-    if ((currentBalance - amount) < MINIMUM_BALANCE) {
+    const MINIMUM_BALANCE = 0;
+    if (currentBalance - amount < MINIMUM_BALANCE) {
       console.log(`\n Withdrawal failed. Minimum balance: ${MINIMUM_BALANCE}`);
       return false;
     }
@@ -111,6 +111,8 @@ const withdrawMoney = async ({ accId, amount }) => {
       accId
     ]);
     console.log(`\n You withdrew: ${amount}. New balance: ${newBalance}`);
+    // Return the new balance
+    return newBalance;
   } catch (err) {
     console.log("\n Withdrawal Error.");
   }
@@ -138,12 +140,15 @@ const depositMoney = async ({ accId, amount }) => {
     console.log(`\n Current balance is ${currentBalance}`);
 
     // Update balance
-    const newBalance = currentBalance + amount;
+    const newBalance = Number(currentBalance + amount);
     await client.query(`UPDATE account SET balance = $1 WHERE acc_id = $2`, [
       newBalance,
       accId
     ]);
     console.log(`\n You deposited ${amount}. New balance: ${newBalance}`);
+
+    // Return the new balance
+    return newBalance;
   } catch (err) {
     console.log("\n Deposit failed.", err.message);
   }
@@ -193,6 +198,11 @@ const transferMoney = async ({ srcId, destId, amount }) => {
     ]);
 
     console.log(`\n You transferred ${amount} from ${srcId} to ${destId}`);
+    // Return the updated balances
+    return {
+      srcBalance: newSrcBalance,
+      destBalance: newDestBalance
+    };
   } catch (err) {
     console.log("Transfer failed.", err.message);
   }
@@ -210,7 +220,7 @@ const checkBalance = async ({ accId }) => {
       return;
     }
 
-    const balance = res.rows[0].balance;
+    const balance = Number(res.rows[0].balance);
     console.log(`Account ${accId} balance is: ${balance}`);
     return balance;
   } catch (err) {

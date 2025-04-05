@@ -1,4 +1,6 @@
-//const { console } = require("inspector")
+//** This code is for CLI for the app*/
+
+const { console } = require("inspector")
 const { resolve } = require("path");
 const readline = require("readline");
 const {
@@ -37,7 +39,7 @@ const user_input = msg =>
 const start = async () => {
   try {
     await connectDB();
-    // console.log("\n Connected successfully to database");
+    console.log("\n Connected successfully to database");
     while (true) {
       const option = await user_input(
         "\n Select an option (option 7 to run tests)"
